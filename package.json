@@ -1,0 +1,27 @@
+{
+	"name": "ld-oauth2-worker",
+	"version": "1.0.0",
+	"description": "Linux.do OAuth2 认证服务 for Cloudflare Workers",
+	"private": true,
+	"scripts": {
+		"deploy": "wrangler deploy",
+		"dev": "wrangler dev",
+		"start": "wrangler dev",
+		"test": "vitest",
+		"deploy:production": "wrangler deploy --env production",
+		"create-kv": "wrangler kv:namespace create SESSIONS"
+	},
+	"keywords": [
+		"oauth2",
+		"linux.do",
+		"cloudflare",
+		"workers"
+	],
+	"author": "Your Name",
+	"license": "MIT",
+	"devDependencies": {
+		"@cloudflare/vitest-pool-workers": "^0.6.4",
+		"vitest": "~2.1.9",
+		"wrangler": "^3.111.0"
+	}
+}

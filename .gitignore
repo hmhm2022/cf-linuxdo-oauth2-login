@@ -1,0 +1,28 @@
+# 依赖目录
+node_modules/
+
+# 敏感信息
+.dev.vars
+.env
+
+# Wrangler 相关
+.wrangler/
+.mf/
+
+# 构建输出
+worker/
+dist/
+
+# 备份文件
+*.bak
+
+# 日志
+*.log
+npm-debug.log*
+
+# IDE 设置
+.vscode/
+
+# 操作系统文件
+.DS_Store
+Thumbs.db

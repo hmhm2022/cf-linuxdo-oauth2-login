@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>用户信息 - Linux.do OAuth</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .profile-info {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 25px;
+            text-align: left;
+        }
+        
+        .info-item {
+            margin-bottom: 12px;
+            display: flex;
+            flex-wrap: wrap;
+        }
+        
+        .info-item:last-child {
+            margin-bottom: 0;
+        }
+        
+        .label {
+            font-weight: 600;
+            width: 100px;
+            color: #555;
+        }
+        
+        .value {
+            flex: 1;
+            color: #333;
+        }
+        
+        .actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background-color: #2563eb;
+            color: white;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn:hover {
+            background-color: #1d4ed8;
+            transform: translateY(-2px);
+        }
+        
+        .btn-danger {
+            background-color: #e53e3e;
+        }
+        
+        .btn-danger:hover {
+            background-color: #c53030;
+        }
+        
+        .profile-header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        
+        #avatar-container {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            overflow: hidden;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        #avatar {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="login-box">
+            <div class="profile-header">
+                <div id="avatar-container">
+                    <img id="avatar" src="https://connect.linux.do/static/img/logo.png" alt="用户头像">
+                </div>
+                <h1 id="username">加载中...</h1>
+            </div>
+            
+            <div class="profile-info">
+                <div class="info-item">
+                    <div class="label">信任等级:</div>
+                    <div class="value" id="user-level">加载中...</div>
+                </div>
+            </div>
+            
+            <div class="actions">
+                <button id="refresh-btn" class="btn">刷新信息</button>
+                <button id="logout-btn" class="btn btn-danger">退出登录</button>
+            </div>
+        </div>
+    </div>
+    <script>
+        // 获取DOM元素
+        const avatarEl = document.getElementById('avatar');
+        const usernameEl = document.getElementById('username');
+        const userLevelEl = document.getElementById('user-level');
+        const refreshBtn = document.getElementById('refresh-btn');
+        const logoutBtn = document.getElementById('logout-btn');
+        
+        // 加载用户信息
+        function loadUserInfo() {
+            fetch('/userinfo')
+                .then(response => {
+                    if (!response.ok) {
+                        // 如果未登录，重定向到登录页面
+                        window.location.href = '/';
+                        throw new Error('未登录');
+                    }
+                    return response.json();
+                })
+                .then(user => {
+                    console.log('用户信息:', user); // 打印完整的用户信息，方便调试
+                    
+                    // 更新用户信息
+                    if (user.avatar_url) {
+                        avatarEl.src = user.avatar_url;
+                    } else if (user.avatar_template) {
+                        avatarEl.src = user.avatar_template;
+                    }
+                    
+                    // 显示用户名
+                    usernameEl.textContent = user.login || user.name || user.username || '未知用户';
+                    
+                    // 显示信任等级 - 直接显示数字级别
+                    userLevelEl.textContent = user.trust_level !== undefined 
+                        ? `${user.trust_level}级` 
+                        : '未知';
+                })
+                .catch(error => {
+                    console.error('获取用户信息时出错:', error);
+                });
+        }
+        
+        // 页面加载时获取用户信息
+        loadUserInfo();
+        
+        // 刷新按钮点击事件
+        refreshBtn.addEventListener('click', loadUserInfo);
+        
+        // 退出登录按钮点击事件
+        logoutBtn.addEventListener('click', () => {
+            // 清除会话并重定向到登录页面
+            fetch('/logout', { method: 'POST' })
+                .then(() => {
+                    window.location.href = '/';
+                })
+                .catch(error => {
+                    console.error('退出登录时出错:', error);
+                    alert('退出登录失败，请重试');
+                });
+        });
+    </script>
+</body>
+</html> 

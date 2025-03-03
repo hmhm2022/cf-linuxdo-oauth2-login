@@ -1,0 +1,37 @@
+name = "cf-linuxdo-oauth2-login"
+main = "src/index.js"
+compatibility_date = "2025-02-24"
+
+# 开发服务器配置
+[dev]
+port = 3000
+
+# 添加 observability 配置
+[observability]
+enabled = true
+
+[vars]
+# 这些是默认值，可以在 Cloudflare Dashboard 中覆盖
+LD_REDIRECT_URI = "https://cf-linuxdo-oauth2-login.your-subdomain.workers.dev/callback"
+
+# 静态资源配置
+[assets]
+directory = "./public/"
+binding = "ASSETS"
+
+# 添加 KV 命名空间配置
+[[kv_namespaces]]
+binding = "SESSIONS"
+id = "test-sessions-kv-id"
+
+# 开发环境配置
+[env.dev]
+name = "cf-linuxdo-oauth2-login-dev"
+vars = { LD_REDIRECT_URI = "http://localhost:3000/callback" }
+
+# 生产环境配置
+[env.production]
+name = "cf-linuxdo-oauth2-login"
+# 敏感信息应该使用 wrangler secret 命令添加
+# wrangler secret put LD_CLIENT_ID --env production
+# wrangler secret put LD_CLIENT_SECRET --env production 
